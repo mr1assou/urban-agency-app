@@ -8,6 +8,7 @@ export const departments={
 };
 
 
+
 export const perms={
     admin:['gérer les comptes','demander un composant'],
     utilisateur:['demander un composant'],'chef département':['demander un composant','rapport département','regarder les demandes'],'responsable de stock':['ajouter des articles']

@@ -15,7 +15,6 @@ function AddAccounts({ func }) {
         Axios.post(`${import.meta.env.VITE_URL}/addAccount`, newAccount)
             .then((response) => {
                 const message = response.data.message
-                console.log(message);
                 if (message === "good") {
                     setValidateEmail('not exist');
                     setNewAccount({ ...newAccount, firstName: '', lastName: '', email: '', permissions: [] });

@@ -13,7 +13,8 @@ export default {
       'grey':'#cdd0d5',
       'green':'#47eb00',
       'yellow':'#BCC224',
-      'orange':'#FF9000'
+      'orange':'#FF9000',
+      'black':'#000000'
     },
   },
   plugins: [],

@@ -1,16 +1,67 @@
 import React, { useEffect } from 'react'
 import Axios from 'axios'
 import { useState } from 'react'
+import { ImCross } from "react-icons/im";
 function DisplayAccounts({ accounts }) {
     Axios.defaults.withCredentials = true;
     const [allAccounts, setAccounts] = useState([]);
+    const [popUp, setPopUp] = useState(false);
+    const [editUser, setEditUser] = useState(null);
     useEffect(() => {
         Axios.get(`${import.meta.env.VITE_URL}/displayAccounts`).then((response => {
+            console.log('inside userEffect djkfdjhgfjhgdfh');
             setAccounts(response.data);
         }))
     }, []);
+    const editAccount = (user_id) => {
+        setPopUp(!popUp);
+        Axios.get(`${import.meta.env.VITE_URL}/userInformation`, {
+            params: { user: user_id },
+        }).then((response => {
+            let userObject;
+            response.data.forEach((item, index) => {
+                if (index === 0)
+                    userObject = { ...item };
+                else
+                    userObject[`title${index}`] = item.title;
+            })
+            setEditUser(userObject);
+        }))
+    }
+    console.log(editUser);
     return (
         <div className='mt-5'>
+            {
+                popUp && <div className="w-full h-full top-0 left-0 absolute bg-[rgba(0,0,0,0.5)] z-10 flex justify-center items-center">
+                    <div className='bg-white w-[50%] h-[60%] rounded-lg py-3 px-2'>
+                        <div className='flex justify-between items-center cursor-pointer '>
+                            {
+                                editUser && <p className="font-black text-black">{editUser.firstName} {editUser.lastName}</p>
+                            }
+                            <ImCross className='text-blue' onClick={() => setPopUp(!popUp)} />
+                        </div>
+                        <div className='flex justify-between items-center cursor-pointer mt-5 '>
+                            {
+                                editUser && <div className='flex justify-between 
+                                flex-wrap  w-full'>
+                                    <div className="flex text-sm">
+                                        <p className='font-black text-blue'>email:</p>
+                                        <p className='ml-2 text-black'>{editUser.email}</p>
+                                    </div>
+                                    <div className="flex text-sm">
+                                        <p className='font-black text-blue'>role:</p>
+                                        <p className='ml-2 text-black'>{editUser.role}</p>
+                                    </div>
+                                    <div className="flex text-sm ">
+                                        <p className='font-black text-blue'>département:</p>
+                                        <p className='ml-2 text-black'>{editUser.dep_name}</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
             <p className="text-center font-bold text-2xl text-blue">Les comptes</p>
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg px-7">
                 <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-5">
@@ -56,7 +107,7 @@ function DisplayAccounts({ accounts }) {
                                         {account.status}
                                     </td>
                                     <td className="px-6 py-4">
-                                        <button className="bg-blue px-10 py-2.5  text-white rounded-lg hover:scale-105 transition-transform duration-300 font-bold">edit</button>
+                                        <button className="bg-blue px-10 py-2.5  text-white rounded-lg hover:scale-105 transition-transform duration-300 font-bold" onClick={() => { editAccount(account.user_id) }}>modifier</button>
                                     </td>
                                 </tr>
                             })

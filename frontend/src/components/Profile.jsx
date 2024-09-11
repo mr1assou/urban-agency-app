@@ -4,7 +4,7 @@ import Content from './Content'
 import { Outlet, Link } from 'react-router-dom';
 function Profile() {
   return (
-    <div className="h-screen">
+    <div className="h-screen ">
         <Header />
         <Outlet />
     </div>

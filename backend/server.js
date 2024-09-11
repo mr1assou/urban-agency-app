@@ -102,7 +102,6 @@ app.post('/addAccount', async (req, res) => {
         res.json({ message: "good" });
     }
     catch (err) {
-        console.log(err.message);
         if(err.message==="permissions empty")
             res.json({ message:"permissions empty"});
         else if(err.message==="Manager obligatory for this department")
@@ -129,6 +128,21 @@ app.get('/displayAccounts', async (req, res) => {
         res.json({message:'error'});
     }
 });
+
+app.get('/userInformation', async (req, res) => {
+    try {
+        const user_id=req.query.user;
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('user_id', sqlServer.Int,user_id);
+        const result = await request.execute('userInformation');
+        res.json(result.recordset);  
+    }
+    catch (err) {
+        res.json({message:'error'});
+    }
+});
+
 
 
 
