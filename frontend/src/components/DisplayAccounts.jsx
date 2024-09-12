@@ -2,14 +2,16 @@ import React, { useEffect } from 'react'
 import Axios from 'axios'
 import { useState } from 'react'
 import { ImCross } from "react-icons/im";
+import { perms } from '../assets/data';
 function DisplayAccounts({ accounts }) {
     Axios.defaults.withCredentials = true;
     const [allAccounts, setAccounts] = useState([]);
     const [popUp, setPopUp] = useState(false);
     const [editUser, setEditUser] = useState(null);
+    const [permissionsArray, setPermissionsArray] = useState([]);
+    const [displayPermissions, setDisplayPermissions] = useState(false);
     useEffect(() => {
         Axios.get(`${import.meta.env.VITE_URL}/displayAccounts`).then((response => {
-            console.log('inside userEffect djkfdjhgfjhgdfh');
             setAccounts(response.data);
         }))
     }, []);
@@ -19,21 +21,28 @@ function DisplayAccounts({ accounts }) {
             params: { user: user_id },
         }).then((response => {
             let userObject;
+            let perms = [];
             response.data.forEach((item, index) => {
-                if (index === 0)
+                if (index === 0) {
                     userObject = { ...item };
-                else
+                    perms.push(userObject.title);
+                }
+                else {
                     userObject[`title${index}`] = item.title;
+                    perms.push(userObject[`title${index}`]);
+                }
             })
             setEditUser(userObject);
+            setPermissionsArray(perms);
         }))
     }
     console.log(editUser);
+    console.log(permissionsArray);
     return (
         <div className='mt-5'>
             {
                 popUp && <div className="w-full h-full top-0 left-0 absolute bg-[rgba(0,0,0,0.5)] z-10 flex justify-center items-center">
-                    <div className='bg-white w-[50%] h-[60%] rounded-lg py-3 px-2'>
+                    <div className='bg-white w-[50%] h-[60%] rounded-lg py-3 px-4'>
                         <div className='flex justify-between items-center cursor-pointer '>
                             {
                                 editUser && <p className="font-black text-black">{editUser.firstName} {editUser.lastName}</p>
@@ -59,6 +68,31 @@ function DisplayAccounts({ accounts }) {
                                 </div>
                             }
                         </div>
+                        {
+                            <div className='flex justify-center'>
+                                <div className="relative  w-[50%] bg-red mt-5">
+                                    <button type="button" onClick={() => setDisplayPermissions(!displayPermissions)}
+                                        className="bg-white  px-5 py-2.5 rounded  text-sm  border outline-none bg-blue-600 hover:bg-blue-700 active:bg-blue-600 w-full">
+                                        les permissions
+                                    </button>
+                                    {
+                                        displayPermissions &&
+                                        <ul className='absolute  shadow-lg  py-2 px-2 z-10 min-w-full w-full rounded max-h-96 overflow-auto '>
+                                            {
+                                                permissionsArray.map((pr) => {
+                                                    return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
+                                                        <input name="checkbox" value={pr} type="checkbox" checked className="peer w-[10%]" />
+                                                        <p className="ml-2  w-[95%]">{pr}</p>
+                                                    </div>
+                                                    </li>
+                                                })
+
+                                            }
+                                        </ul>
+                                    }
+                                </div>
+                            </div>
+                        }
                     </div>
                 </div>
             }
