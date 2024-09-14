@@ -9,6 +9,7 @@ function DisplayAccounts({ accounts }) {
     const [popUp, setPopUp] = useState(false);
     const [editUser, setEditUser] = useState(null);
     const [permissionsArray, setPermissionsArray] = useState([]);
+    const [extensionsArray, setExtensionsArray] = useState([]);
     const [displayPermissions, setDisplayPermissions] = useState(false);
     useEffect(() => {
         Axios.get(`${import.meta.env.VITE_URL}/displayAccounts`).then((response => {
@@ -32,18 +33,49 @@ function DisplayAccounts({ accounts }) {
                     perms.push(userObject[`title${index}`]);
                 }
             })
+            if (userObject.role === 'utilisateur' && userObject.dep_name === 'département administratif et financier')
+                setExtensionsArray(['valider les demandes']);
+            else
+                setExtensionsArray([]);
             setEditUser(userObject);
             setPermissionsArray(perms);
         }))
     }
+    const handlePermissions = (e) => {
+        if (!e.target.checked) {
+            setPermissionsArray(prevPermissionsArray => {
+                const array = prevPermissionsArray.filter(item => item != e.target.value);
+                return array;
+            });
+            if (editUser.role === 'utilisateur' && editUser.dep_name === 'département administratif et financier')
+                setExtensionsArray(['valider les demandes']);
+        }
+        else {
+            if (extensionsArray)
+                setExtensionsArray([]);
+            setPermissionsArray(prevPermissionsArray => {
+                const newArray = [...prevPermissionsArray, e.target.value];
+                return newArray;
+            });
+        }
+    }
+    const updatePermissions = (e) => {
+        e.preventDefault();
+        Axios.post(`${import.meta.env.VITE_URL}/updatePermissions`, { 'email': editUser.email, permissions: permissionsArray })
+            .then((response) => {
+
+            })
+    }
     console.log(editUser);
-    console.log(permissionsArray);
     return (
         <div className='mt-5'>
             {
-                popUp && <div className="w-full h-full top-0 left-0 absolute bg-[rgba(0,0,0,0.5)] z-10 flex justify-center items-center">
-                    <div className='bg-white w-[50%] h-[60%] rounded-lg py-3 px-4'>
-                        <div className='flex justify-between items-center cursor-pointer '>
+                popUp && <form className="w-full h-full top-0 left-0 fixed bg-[rgba(0,0,0,0.5)] z-10 flex justify-center items-center">
+                    <div className='bg-white w-[60%] h-[80%] rounded-lg py-3 px-4 relative'>
+                        {
+                            true && <p className="text-center px-3 py-2 bg-green text-white text-xl font-bold">Compte ajouté avec succès</p>
+                        }
+                        <div className='flex justify-between items-center cursor-pointer mt-5'>
                             {
                                 editUser && <p className="font-black text-black">{editUser.firstName} {editUser.lastName}</p>
                             }
@@ -70,7 +102,7 @@ function DisplayAccounts({ accounts }) {
                         </div>
                         {
                             <div className='flex justify-center'>
-                                <div className="relative  w-[50%] bg-red mt-5">
+                                <div className="relative  w-[50%]  mt-10">
                                     <button type="button" onClick={() => setDisplayPermissions(!displayPermissions)}
                                         className="bg-white  px-5 py-2.5 rounded  text-sm  border outline-none bg-blue-600 hover:bg-blue-700 active:bg-blue-600 w-full">
                                         les permissions
@@ -81,20 +113,45 @@ function DisplayAccounts({ accounts }) {
                                             {
                                                 permissionsArray.map((pr) => {
                                                     return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
-                                                        <input name="checkbox" value={pr} type="checkbox" checked className="peer w-[10%]" />
+                                                        <input name="checkbox" value={pr} type="checkbox" checked className="peer w-[10%]" onChange={handlePermissions} />
                                                         <p className="ml-2  w-[95%]">{pr}</p>
                                                     </div>
                                                     </li>
                                                 })
-
+                                            }
+                                            {
+                                                perms[editUser.role].map((element) => {
+                                                    if (!permissionsArray.includes(element))
+                                                        return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
+                                                            <input name="checkbox" value={element} type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
+                                                            <p className="ml-2  w-[95%]">{element}</p>
+                                                        </div>
+                                                        </li>
+                                                })
+                                            }
+                                            {
+                                                extensionsArray && extensionsArray.map(extension => {
+                                                    if (!permissionsArray.includes(extension))
+                                                        return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
+                                                            <input name="checkbox" value={extension} type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
+                                                            <p className="ml-2  w-[95%]">{extension}</p>
+                                                        </div>
+                                                        </li>
+                                                })
                                             }
                                         </ul>
                                     }
                                 </div>
                             </div>
                         }
+                        <div className='absolute bottom-4 right-4 flex gap-3'>
+                            <button className='bg-red py-2 px-2 text-white'>bloquer le compte</button>
+                            <button className='bg-blue py-2 px-2 text-white'>réinitialiser le mot de passe</button>
+                            <button className='bg-green py-2 px-2 text-white' onClick={updatePermissions}>enregistrer les permissions</button>
+                        </div>
                     </div>
-                </div>
+
+                </form>
             }
             <p className="text-center font-bold text-2xl text-blue">Les comptes</p>
             <div className="relative overflow-x-auto shadow-md sm:rounded-lg px-7">

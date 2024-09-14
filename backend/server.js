@@ -144,6 +144,20 @@ app.get('/userInformation', async (req, res) => {
 });
 
 
+app.post('/updatePermissions', async (req, res) => {
+    const {email,permissions}=req.body;  
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('email', sqlServer.VarChar(255), email);
+        request.input('permissions', sqlServer.VarChar(900), permissions.join("-"));
+        const result = await request.execute('updatePermissions');
+        res.json({ message: "good" });
+    }
+    catch (err) {
+        res.json({message:err.message});
+    }
+});
 
 
 
