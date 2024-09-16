@@ -5,6 +5,7 @@ const express = require('express');
 const app = express();
 const cors = require("cors");
 const sqlServer = require('mssql');
+const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 app.use(cors({
@@ -55,12 +56,23 @@ app.post('/login', async (req, res) => {
     let pool = await poolPromise;
     const { email, password } = req.body;
     const request = pool.request();
-    request.input('email', sqlServer.NVarChar, email);
-    request.input('password', sqlServer.NVarChar, password);
+    request.input('email', sqlServer.VarChar(255), email);
     const result = await request.execute('login');
+    const hashedPassword=result.recordset[0].password;
+
+    bcrypt.compare(password,hashedPassword,(err,response)=>{
+        if(response){
+            req.session.user = result.recordset[0];
+            console.log(req.session.user);
+            console.log(result.recordset[0]);
+            res.json(result.recordset[0]);
+        }
+         else{
+            res.json({ message: 'no client with this credentials' })
+         }   
+    })
     if (result.recordset.length > 0) {
-        req.session.user = result.recordset[0];
-        res.json(result.recordset[0]);
+      
     }
     else {
         res.json({ message: 'no client with this credentials' })
@@ -88,6 +100,8 @@ app.get('/permissions', async (req, res) => {
     }
 });
 app.post('/addAccount', async (req, res) => {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash('123', saltRounds);
     const { firstName, lastName, email, department, role, permissions } = req.body;
     try {
         let pool = await poolPromise;
@@ -96,57 +110,58 @@ app.post('/addAccount', async (req, res) => {
         request.input('lastName', sqlServer.VarChar(255), lastName);
         request.input('email', sqlServer.VarChar(255), email);
         request.input('department', sqlServer.VarChar(255), department);
+        request.input('password', sqlServer.VarChar(255), hashedPassword);
         request.input('role', sqlServer.VarChar(255), role);
         request.input('permissions', sqlServer.VarChar(255), permissions.join("-"));
         const result = await request.execute('addAccount');
         res.json({ message: "good" });
     }
     catch (err) {
-        if(err.message==="permissions empty")
-            res.json({ message:"permissions empty"});
-        else if(err.message==="Manager obligatory for this department")
-            res.json({ message:"manager obligatory"});
-        else if(err.message.startsWith('Violation of UNIQUE KEY constraint'))
-            res.json({ message:"error"});
+        console.log(err);
+        if (err.message === "permissions empty")
+            res.json({ message: "permissions empty" });
+        else if (err.message === "Manager obligatory for this department")
+            res.json({ message: "manager obligatory" });
+        else if (err.message.startsWith('Violation of UNIQUE KEY constraint'))
+            res.json({ message: "error" });
         else
-            res.json({message:'department manager already exist'});
+            res.json({ message: 'department manager already exist' });
     }
 });
 
 app.get('/displayAccounts', async (req, res) => {
     try {
         const userCopy = { ...req.session.user };
-        const { user_id,role} = userCopy;
+        const { user_id, role } = userCopy;
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('user_id', sqlServer.Int,user_id);
-        request.input('role', sqlServer.VarChar(255),role);
+        request.input('user_id', sqlServer.Int, user_id);
+        request.input('role', sqlServer.VarChar(255), role);
         const result = await request.execute('displayUsers');
-        console.log('BLOCK BLOCK BLOCK');
-        res.json(result.recordset);  
+        res.json(result.recordset);
     }
     catch (err) {
-        res.json({message:'error'});
+        res.json({ message: 'error' });
     }
 });
 
 app.get('/userInformation', async (req, res) => {
     try {
-        const user_id=req.query.user;
+        const user_id = req.query.user;
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('user_id', sqlServer.Int,user_id);
+        request.input('user_id', sqlServer.Int, user_id);
         const result = await request.execute('userInformation');
-        res.json(result.recordset);  
+        res.json(result.recordset);
     }
     catch (err) {
-        res.json({message:'error'});
+        res.json({ message: 'error' });
     }
 });
 
 
 app.post('/updatePermissions', async (req, res) => {
-    const {email,permissions}=req.body;  
+    const { email, permissions } = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
@@ -156,12 +171,12 @@ app.post('/updatePermissions', async (req, res) => {
         res.json({ message: "good" });
     }
     catch (err) {
-        res.json({message:err.message});
+        res.json({ message: err.message });
     }
 });
 
 app.post('/block', async (req, res) => {
-    const {email}=req.body;  
+    const { email } = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
@@ -170,7 +185,7 @@ app.post('/block', async (req, res) => {
         res.json({ message: "good" });
     }
     catch (err) {
-        res.json({message:err.message});
+        res.json({ message: err.message });
     }
 });
 
