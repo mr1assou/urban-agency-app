@@ -1,22 +1,39 @@
-import React, { useEffect } from 'react'
+import React  from 'react'
 import Axios from 'axios'
 import { useState } from 'react'
 import { ImCross } from "react-icons/im";
 import { perms } from '../assets/data';
-function DisplayAccounts({ accounts }) {
+function DisplayAccounts({ accounts , func}) {
     Axios.defaults.withCredentials = true;
-    const [allAccounts, setAccounts] = useState([]);
+    // const [allAccounts, setAccounts] = useState([]);
     const [popUp, setPopUp] = useState(false);
     const [editUser, setEditUser] = useState(null);
     const [permissionsArray, setPermissionsArray] = useState([]);
     const [extensionsArray, setExtensionsArray] = useState([]);
     const [displayPermissions, setDisplayPermissions] = useState(false);
-    useEffect(() => {
-        Axios.get(`${import.meta.env.VITE_URL}/displayAccounts`).then((response => {
-            setAccounts(response.data);
-        }))
-    }, []);
+    const [validateOperation, setValidateOperation] = useState(null);
+    const [blockAccount, setBlockAccount] = useState(false);
+    // useEffect(() => {
+    //     Axios.get(`${import.meta.env.VITE_URL}/displayAccounts`).then((response => {
+    //         setAccounts(response.data);
+    //     }))
+    // }, [validateBlock]);
+    // console.log(allAccounts);
+    const block = (e) => {
+        e.preventDefault();
+        Axios.post(`${import.meta.env.VITE_URL}/block`, { 'email': editUser.email })
+            .then((response) => {
+                if (response.data.message === "good") {
+                    setValidateOperation('compte bloqué avec succès');
+                    setBlockAccount(!blockAccount);
+                    func(prevReload => !prevReload);
+                }
+            })
+    }
     const editAccount = (user_id) => {
+        setBlockAccount(false);
+        setDisplayPermissions(false);
+        setValidateOperation(null);
         setPopUp(!popUp);
         Axios.get(`${import.meta.env.VITE_URL}/userInformation`, {
             params: { user: user_id },
@@ -63,17 +80,28 @@ function DisplayAccounts({ accounts }) {
         e.preventDefault();
         Axios.post(`${import.meta.env.VITE_URL}/updatePermissions`, { 'email': editUser.email, permissions: permissionsArray })
             .then((response) => {
-
+                console.log(response.data.message);
+                if (response.data.message === "good")
+                    setValidateOperation('les autorisations sont mises à jour avec succès')
+                else
+                    setValidateOperation('Choisissez les permissions')
             })
     }
-    console.log(editUser);
+    const funcBlockAccount = (e) => {
+        e.preventDefault();
+        setBlockAccount(!blockAccount);
+    }
     return (
         <div className='mt-5'>
             {
                 popUp && <form className="w-full h-full top-0 left-0 fixed bg-[rgba(0,0,0,0.5)] z-10 flex justify-center items-center">
                     <div className='bg-white w-[60%] h-[80%] rounded-lg py-3 px-4 relative'>
                         {
-                            true && <p className="text-center px-3 py-2 bg-green text-white text-xl font-bold">Compte ajouté avec succès</p>
+                            validateOperation === 'les autorisations sont mises à jour avec succès'
+                                ? <p className="text-center p-3 bg-green text-white text-xl font-bold">les permissions sont mises à jour avec succès</p> :
+                                validateOperation === 'Choisissez les permissions'
+                                    ? <p className="text-center p-3 bg-red text-white text-xl font-bold">Choisissez les permissions</p> : validateOperation === 'compte bloqué avec succès'
+                                        ? <p className="text-center p-3 bg-green text-white text-xl font-bold">compte bloqué avec succès</p> : null
                         }
                         <div className='flex justify-between items-center cursor-pointer mt-5'>
                             {
@@ -101,7 +129,7 @@ function DisplayAccounts({ accounts }) {
                             }
                         </div>
                         {
-                            <div className='flex justify-center'>
+                            !blockAccount && <div className='flex justify-center'>
                                 <div className="relative  w-[50%]  mt-10">
                                     <button type="button" onClick={() => setDisplayPermissions(!displayPermissions)}
                                         className="bg-white  px-5 py-2.5 rounded  text-sm  border outline-none bg-blue-600 hover:bg-blue-700 active:bg-blue-600 w-full">
@@ -144,11 +172,24 @@ function DisplayAccounts({ accounts }) {
                                 </div>
                             </div>
                         }
-                        <div className='absolute bottom-4 right-4 flex gap-3'>
-                            <button className='bg-red py-2 px-2 text-white'>bloquer le compte</button>
-                            <button className='bg-blue py-2 px-2 text-white'>réinitialiser le mot de passe</button>
-                            <button className='bg-green py-2 px-2 text-white' onClick={updatePermissions}>enregistrer les permissions</button>
-                        </div>
+                        {
+                            blockAccount && <div className='mt-20'>
+                                <p className='mt-10 flex justify-center items-center font-black text-red'>Êtes-vous sûr de bloquer  ce compte ?</p>
+                                <div className='flex justify-center mt-10'>
+                                    <button className='bg-red p-2 text-white font-bold' onClick={block}>bloquer</button>
+                                    <button className='font-bold ml-2 bg-grey p-2' onClickCapture={() => { setBlockAccount(!blockAccount) }}>annuler</button>
+                                </div>
+                            </div>
+                        }
+                        {
+                            !blockAccount && <div className='absolute bottom-4 right-4 flex gap-3'>
+                                <button className='bg-red py-2 px-2 text-white'
+                                    onClick={funcBlockAccount}>
+                                    bloquer le compte</button>
+                                <button className='bg-blue py-2 px-2 text-white'>réinitialiser le mot de passe</button>
+                                <button className='bg-green py-2 px-2 text-white' onClick={updatePermissions}>enregistrer les permissions</button>
+                            </div>
+                        }
                     </div>
 
                 </form>

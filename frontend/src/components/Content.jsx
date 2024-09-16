@@ -10,6 +10,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom';
 import { MdProductionQuantityLimits } from "react-icons/md";
 import { TbReportAnalytics } from "react-icons/tb";
+import { GrValidate } from "react-icons/gr";
 function Content() {
     Axios.defaults.withCredentials = true;
     const [permissions, setPermissions] = useState([]);
@@ -52,6 +53,11 @@ function Content() {
                             return <div className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <TbReportAnalytics className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                                 <p className=" text-center text-white font-bold ">rapport de département</p>
+                            </div>
+                        if (permission.title === "valider les demandes")
+                            return <div className="bg-grey w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
+                                <GrValidate className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
+                                <p className=" text-center text-white font-bold ">valider les demandes</p>
                             </div>
                     })
                 }

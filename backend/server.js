@@ -122,6 +122,7 @@ app.get('/displayAccounts', async (req, res) => {
         request.input('user_id', sqlServer.Int,user_id);
         request.input('role', sqlServer.VarChar(255),role);
         const result = await request.execute('displayUsers');
+        console.log('BLOCK BLOCK BLOCK');
         res.json(result.recordset);  
     }
     catch (err) {
@@ -152,6 +153,20 @@ app.post('/updatePermissions', async (req, res) => {
         request.input('email', sqlServer.VarChar(255), email);
         request.input('permissions', sqlServer.VarChar(900), permissions.join("-"));
         const result = await request.execute('updatePermissions');
+        res.json({ message: "good" });
+    }
+    catch (err) {
+        res.json({message:err.message});
+    }
+});
+
+app.post('/block', async (req, res) => {
+    const {email}=req.body;  
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('email', sqlServer.VarChar(255), email);
+        const result = await request.execute('blockAccount');
         res.json({ message: "good" });
     }
     catch (err) {
