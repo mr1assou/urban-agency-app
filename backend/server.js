@@ -58,18 +58,23 @@ app.post('/login', async (req, res) => {
     const request = pool.request();
     request.input('email', sqlServer.VarChar(255), email);
     const result = await request.execute('login');
-    const hashedPassword=result.recordset[0].password;
-    bcrypt.compare(password,hashedPassword,(err,response)=>{
-        if(response){
-            req.session.user = result.recordset[0];
-            console.log(req.session.user);
-            console.log(result.recordset[0]);
-            res.json(result.recordset[0]);
-        }
-         else{
-            res.json({ message: 'no client with this credentials' })
-         }   
-    })
+    if (result.recordset.length > 0) {
+        const hashedPassword = result.recordset[0].password;
+        bcrypt.compare(password, hashedPassword, (err, response) => {
+            if (response) {
+                req.session.user = result.recordset[0];
+                console.log(req.session.user);
+                console.log(result.recordset[0]);
+                res.json(result.recordset[0]);
+            }
+            else {
+                res.json({ message: 'no client with this credentials' })
+            }
+        })
+    }
+    else{
+        res.json({ message: 'no client with this credentials' })
+    }
 });
 
 app.get('/user', (req, res) => {
