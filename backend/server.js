@@ -58,7 +58,7 @@ app.post('/login', async (req, res) => {
     const request = pool.request();
     request.input('email', sqlServer.VarChar(255), email);
     const result = await request.execute('login');
-    if (result.recordset.length > 0) {
+    if (result.recordset.length > 0 && result.recordset[0].status==='access') {
         const hashedPassword = result.recordset[0].password;
         bcrypt.compare(password, hashedPassword, (err, response) => {
             if (response) {
@@ -97,6 +97,7 @@ app.get('/permissions', async (req, res) => {
         res.json({ message: 'you don\'t have any permissions' });
     }
 });
+
 app.post('/addAccount', async (req, res) => {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash('urbanAgency2024', saltRounds);
@@ -124,6 +125,22 @@ app.post('/addAccount', async (req, res) => {
             res.json({ message: "error" });
         else
             res.json({ message: 'department manager already exist' });
+    }
+});
+app.post('/resetPassword', async (req, res) => {
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash('urbanAgency2024', saltRounds);
+    const { email } = req.body;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('email', sqlServer.VarChar(255), email);
+        request.input('password', sqlServer.VarChar(255), hashedPassword);
+        const result = await request.execute('resetPassword');
+        res.json({ message: "good" });
+    }
+    catch (err) {
+        res.json({ message: "error" });
     }
 });
 

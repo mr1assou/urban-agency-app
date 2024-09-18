@@ -5,7 +5,6 @@ import { ImCross } from "react-icons/im";
 import { perms } from '../assets/data';
 function DisplayAccounts({ accounts , func}) {
     Axios.defaults.withCredentials = true;
-    // const [allAccounts, setAccounts] = useState([]);
     const [popUp, setPopUp] = useState(false);
     const [editUser, setEditUser] = useState(null);
     const [permissionsArray, setPermissionsArray] = useState([]);
@@ -13,12 +12,6 @@ function DisplayAccounts({ accounts , func}) {
     const [displayPermissions, setDisplayPermissions] = useState(false);
     const [validateOperation, setValidateOperation] = useState(null);
     const [blockAccount, setBlockAccount] = useState(false);
-    // useEffect(() => {
-    //     Axios.get(`${import.meta.env.VITE_URL}/displayAccounts`).then((response => {
-    //         setAccounts(response.data);
-    //     }))
-    // }, [validateBlock]);
-    // console.log(allAccounts);
     const block = (e) => {
         e.preventDefault();
         Axios.post(`${import.meta.env.VITE_URL}/block`, { 'email': editUser.email })
@@ -80,11 +73,18 @@ function DisplayAccounts({ accounts , func}) {
         e.preventDefault();
         Axios.post(`${import.meta.env.VITE_URL}/updatePermissions`, { 'email': editUser.email, permissions: permissionsArray })
             .then((response) => {
-                console.log(response.data.message);
                 if (response.data.message === "good")
                     setValidateOperation('les autorisations sont mises à jour avec succès')
                 else
                     setValidateOperation('Choisissez les permissions')
+            })
+    }
+    const resetPassword=(e)=>{
+        e.preventDefault();
+        Axios.post(`${import.meta.env.VITE_URL}/resetPassword`, { 'email': editUser.email})
+            .then((response) => {
+                if (response.data.message === "good")
+                    setValidateOperation('vous avez réinitialisé votre mot de passe avec succès')
             })
     }
     const funcBlockAccount = (e) => {
@@ -101,7 +101,7 @@ function DisplayAccounts({ accounts , func}) {
                                 ? <p className="text-center p-3 bg-green text-white text-xl font-bold">les permissions sont mises à jour avec succès</p> :
                                 validateOperation === 'Choisissez les permissions'
                                     ? <p className="text-center p-3 bg-red text-white text-xl font-bold">Choisissez les permissions</p> : validateOperation === 'compte bloqué avec succès'
-                                        ? <p className="text-center p-3 bg-green text-white text-xl font-bold">compte bloqué avec succès</p> : null
+                                        ? <p className="text-center p-3 bg-green text-white text-xl font-bold">compte bloqué avec succès</p> : validateOperation==='vous avez réinitialisé votre mot de passe avec succès' ? <p className="text-center p-3 bg-green text-white text-xl font-bold">vous avez réinitialisé votre mot de passe avec succès</p>:null
                         }
                         <div className='flex justify-between items-center cursor-pointer mt-5'>
                             {
@@ -186,7 +186,7 @@ function DisplayAccounts({ accounts , func}) {
                                 <button className='bg-red py-2 px-2 text-white'
                                     onClick={funcBlockAccount}>
                                     bloquer le compte</button>
-                                <button className='bg-blue py-2 px-2 text-white'>réinitialiser le mot de passe</button>
+                                <button className='bg-blue py-2 px-2 text-white' onClick={resetPassword}>réinitialiser le mot de passe</button>
                                 <button className='bg-green py-2 px-2 text-white' onClick={updatePermissions}>enregistrer les permissions</button>
                             </div>
                         }
@@ -224,7 +224,7 @@ function DisplayAccounts({ accounts , func}) {
                             accounts.map((account) => {
                                 return <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800  dark:border-gray-700 text-center">
                                     <th scope="row" className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white font-black">
-                                        {account.firstName} {account.lastName}
+                                        {account.firstName.charAt(0).toUpperCase()+account.firstName.slice(1).toLowerCase()} {account.lastName.charAt(0).toUpperCase()+account.lastName.slice(1).toLowerCase()}
                                     </th>
                                     <td className="px-6 py-4  ">
                                         {account.email}

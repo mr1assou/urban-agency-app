@@ -17,7 +17,7 @@ function Header() {
           <img src={logo} className="block w-[8%] h-[90%] "/>
             <div className="mr-2">
                 <small className="text-grey">{user.role}</small>
-                <p className="font-medium">{user.firstName} {user.lastName}</p>
+                <p className="font-medium">{user.firstName.charAt(0).toUpperCase()+user.firstName.slice(1).toLowerCase()} {user.lastName.charAt(0).toUpperCase()+user.lastName.slice(1).toLowerCase()}</p>
             </div>
         </nav>
     </div>
