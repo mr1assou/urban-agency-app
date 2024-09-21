@@ -63,8 +63,6 @@ app.post('/login', async (req, res) => {
         bcrypt.compare(password, hashedPassword, (err, response) => {
             if (response) {
                 req.session.user = result.recordset[0];
-                console.log(req.session.user);
-                console.log(result.recordset[0]);
                 res.json(result.recordset[0]);
             }
             else {
@@ -201,6 +199,31 @@ app.post('/block', async (req, res) => {
     }
     catch (err) {
         res.json({ message: err.message });
+    }
+});
+
+
+app.post('/addProducts', async (req, res) => {
+    const { products } = req.body;
+    let productsArray=[];
+    products.forEach((product,index)=>{
+        if(index>=4){
+            productsArray.push(product["AGENCE URBAINE D'AGADIR"]);      
+        }
+    })
+    productsString=productsArray.join("$");
+    try {
+        console.log('@@@@@@@@');
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('stringProducts', sqlServer.NVarChar(200000),productsString);
+        const result = await request.execute('addProducts');
+        console.log('goooooooood');
+        res.json({ message: "good" });
+    }
+    catch (err) {
+        console.log(err);
+        res.json({ message:"errorrr"});
     }
 });
 

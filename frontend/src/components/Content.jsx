@@ -30,7 +30,7 @@ function Content() {
                                  <p className=" text-center text-white font-bold ">gérer les comptes</p>
                             </Link>
                         if (permission.title === "votre département")
-                            return <Link className="bg-orange w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
+                            return <Link  className="bg-orange w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <FaRegBuilding className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                                 <p className=" text-center text-white font-bold ">votre département</p>
                             </Link>
@@ -45,10 +45,10 @@ function Content() {
                                 <p className=" text-center text-white font-bold ">regarder les demandes</p>
                             </div>
                         if (permission.title === "ajouter des articles")
-                            return <div className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
+                            return <Link to="/profile/addProducts" className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <MdProductionQuantityLimits className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                                 <p className=" text-center text-white font-bold ">ajouter des articles</p>
-                            </div>
+                            </Link>
                         if (permission.title === "rapport département")
                             return <div className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <TbReportAnalytics className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
