@@ -11,7 +11,8 @@ function AddProducts() {
     const [allProducts, setAllProducts] = useState([]);
     const [popUp, setPopUp] = useState(false);
     const [updatingProduct, setUpdatingProduct] = useState({ product_id: '', productTitle: '', newQuantity: '' });
-    const [newQuantity,setNewQuantity]=useState(null);
+    const [newQuantity,setNewQuantity]=useState(0);
+    const [validateNewQuantity,setValidateNewQuantity]=useState(null);
     useEffect(() => {
         Axios.post(`${import.meta.env.VITE_URL}/displayProducts`, { category: displayProducts })
             .then((response) => {
@@ -43,28 +44,37 @@ function AddProducts() {
     }
     const updateQuantity = (productId, productTitle, quantity) => {
         setPopUp(true);
+        setNewQuantity(0);
+        setValidateNewQuantity(null);
         setUpdatingProduct({ product_id: productId, productTitle: productTitle, newQuantity: quantity });
     }
     const submitNewQuantity=(e)=>{
         e.preventDefault();
-        console.log('@@@@@@@@@à');
         Axios.post(`${import.meta.env.VITE_URL}/modifyQuantity`,{productTitle:updatingProduct.productTitle,newQuantity:newQuantity})
             .then((response) => {
                 const message = response.data.message
                 if(message==="good"){
-                    setPopUp(false);
                     setReload(!reload);
+                    setPopUp(false);
+                }
+                else{
+                    console.log('erroooooooooor quantity');
+                    setValidateNewQuantity('validate quantity');
                 }
             })
     }
-    console.log(newQuantity);
-    console.log(updatingProduct);
     return (
         <div className='flex flex-col items-center  justify-center'>
             {
                 popUp && <div className="w-full h-full top-0 left-0 fixed bg-[rgba(0,0,0,0.5)] z-10 flex justify-center items-center">
-                    <div className='bg-white w-[60%] h-[40%] rounded-lg py-3 px-4 relative'>
-                        <div className='flex justify-between items-center cursor-pointer '>
+                     
+                    <div className='bg-white w-[60%] min-h-[40%] rounded-lg py-3 px-4 relative'>
+                        {
+                            validateNewQuantity ==="validate quantity" ?
+                            <p className="text-center p-2 bg-red text-white text-xl font-bold  w-full">vous devez choisir une quantité égale ou supérieure à zéro</p>
+                            : null
+                        }
+                        <div className='flex justify-between items-center cursor-pointer mt-5'>
                             {
                                 <p className="font-black text-blue">{updatingProduct.productTitle}</p>
                             }
@@ -74,7 +84,7 @@ function AddProducts() {
                             <div className='w-[30%] '>
                                 <label for="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
                                     quantité:</label>
-                                <input id="email" type="number" min="1" className=" bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full px-4 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required
+                                <input id="email" type="number" min="0" className=" bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full px-4 py-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required value={newQuantity}
                                 onChange={(e)=>{setNewQuantity(e.target.value)}}/>
                             </div>
                             <button onClick={submitNewQuantity} className="bg-blue px-10 py-2.5  text-white rounded-lg hover:scale-105 transition-transform duration-300 font-bold mt-10" >modifier </button>
