@@ -204,19 +204,13 @@ app.post('/block', async (req, res) => {
 
 
 app.post('/addProducts', async (req, res) => {
-    const { products } = req.body;
-    let productsArray=[];
-    products.forEach((product,index)=>{
-        if(index>=4){
-            productsArray.push(product["AGENCE URBAINE D'AGADIR"]);      
-        }
-    })
-    productsString=productsArray.join("$");
+    const {nameProduct,category,quantity } = req.body;
     try {
-        console.log('@@@@@@@@');
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('stringProducts', sqlServer.NVarChar(200000),productsString);
+        request.input('product', sqlServer.VarChar(500),nameProduct);
+        request.input('category', sqlServer.VarChar(300),category);
+        request.input('quantity', sqlServer.Int,quantity);
         const result = await request.execute('addProducts');
         console.log('goooooooood');
         res.json({ message: "good" });
@@ -224,6 +218,37 @@ app.post('/addProducts', async (req, res) => {
     catch (err) {
         console.log(err);
         res.json({ message:"errorrr"});
+    }
+});
+app.post('/displayProducts', async (req, res) => {
+    const {category} = req.body;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('category', sqlServer.VarChar(500),category);
+        const result = await request.execute('selectProducts');
+        res.json(result.recordset);
+    }
+    catch (err) {
+        res.json({ message:"errorjdfdhf"});
+    }
+});
+app.post('/modifyQuantity', async (req, res) => {
+    console.log(req.body);
+    const {productTitle,newQuantity} = req.body;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        console.log(newQuantity);
+        console.log(productTitle);
+        request.input('productTitle', sqlServer.VarChar(700),productTitle);
+        request.input('newQuantity', sqlServer.Int,newQuantity);
+        const result = await request.execute('updateQuantity');
+        res.json({message:"good"});
+    }
+    catch (err) {
+        console.log(err);
+        res.json({ message:"errorjdfdhf"});
     }
 });
 
