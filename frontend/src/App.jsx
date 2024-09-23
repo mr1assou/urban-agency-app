@@ -6,6 +6,8 @@ import './index.css'
 import ManageAccounts from './components/ManageAccounts.jsx';
 import Content from './components/Content.jsx';
 import AddProducts from './components/AddProducts.jsx'
+import RequestAComponent from './components/RequestAComponent.jsx';
+
 function App() {
   return (
     <Router>
@@ -15,6 +17,7 @@ function App() {
           <Route path="content" element={<Content />} />
           <Route path="accounts" element={<ManageAccounts />} />
           <Route path="addProducts" element={<AddProducts />} />
+          <Route path="requestComponent" element={<RequestAComponent />} />
         </Route>
       </Routes>
     </Router>

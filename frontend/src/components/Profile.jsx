@@ -8,6 +8,7 @@ function Profile() {
         <Header />
         <Outlet />
     </div>
+    
   )
 }
 

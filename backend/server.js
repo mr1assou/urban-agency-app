@@ -234,7 +234,6 @@ app.post('/displayProducts', async (req, res) => {
     }
 });
 app.post('/modifyQuantity', async (req, res) => {
-    console.log(req.body);
     const {productTitle,newQuantity} = req.body;
     try {
         let pool = await poolPromise;

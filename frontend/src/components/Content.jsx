@@ -35,10 +35,10 @@ function Content() {
                                 <p className=" text-center text-white font-bold ">votre département</p>
                             </Link>
                         if (permission.title === "demander un composant")
-                            return <div className="bg-yellow w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
+                            return <Link to='/profile/requestComponent' className="bg-yellow w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <FaHandHoldingMedical className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                                 <p className=" text-center text-white font-bold ">demander un composant</p>
-                            </div>
+                            </Link>
                         if (permission.title === "regarder les demandes")
                             return <div className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <LuMessageCircle className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
