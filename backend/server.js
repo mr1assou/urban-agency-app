@@ -58,7 +58,7 @@ app.post('/login', async (req, res) => {
     const request = pool.request();
     request.input('email', sqlServer.VarChar(255), email);
     const result = await request.execute('login');
-    if (result.recordset.length > 0 && result.recordset[0].status==='access') {
+    if (result.recordset.length > 0 && result.recordset[0].status === 'access') {
         const hashedPassword = result.recordset[0].password;
         bcrypt.compare(password, hashedPassword, (err, response) => {
             if (response) {
@@ -70,7 +70,7 @@ app.post('/login', async (req, res) => {
             }
         })
     }
-    else{
+    else {
         res.json({ message: 'no client with this credentials' })
     }
 });
@@ -204,53 +204,85 @@ app.post('/block', async (req, res) => {
 
 
 app.post('/addProducts', async (req, res) => {
-    const {nameProduct,category,quantity } = req.body;
+    const { nameProduct, category, quantity } = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('product', sqlServer.VarChar(500),nameProduct);
-        request.input('category', sqlServer.VarChar(300),category);
-        request.input('quantity', sqlServer.Int,quantity);
+        request.input('product', sqlServer.VarChar(500), nameProduct);
+        request.input('category', sqlServer.VarChar(300), category);
+        request.input('quantity', sqlServer.Int, quantity);
         const result = await request.execute('addProducts');
         console.log('goooooooood');
         res.json({ message: "good" });
     }
     catch (err) {
         console.log(err);
-        res.json({ message:"errorrr"});
+        res.json({ message: "errorrr" });
     }
 });
 app.post('/displayProducts', async (req, res) => {
-    const {category} = req.body;
+    const { category } = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('category', sqlServer.VarChar(500),category);
+        request.input('category', sqlServer.VarChar(500), category);
         const result = await request.execute('selectProducts');
         res.json(result.recordset);
     }
     catch (err) {
-        res.json({ message:"errorjdfdhf"});
+        res.json({ message: "errorjdfdhf" });
     }
 });
 app.post('/modifyQuantity', async (req, res) => {
-    const {productTitle,newQuantity} = req.body;
+    const { productTitle, newQuantity } = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
         console.log(newQuantity);
         console.log(productTitle);
-        request.input('productTitle', sqlServer.VarChar(700),productTitle);
-        request.input('newQuantity', sqlServer.Int,newQuantity);
+        request.input('productTitle', sqlServer.VarChar(700), productTitle);
+        request.input('newQuantity', sqlServer.Int, newQuantity);
         const result = await request.execute('updateQuantity');
-        res.json({message:"good"});
+        res.json({ message: "good" });
     }
     catch (err) {
         console.log(err);
-        res.json({ message:"errorjdfdhf"});
+        res.json({ message: "errorjdfdhf" });
     }
 });
 
+app.post('/sendPurchaseOrder', async (req, res) => {
+    const userCopy = { ...req.session.user };
+    const { user_id} = userCopy;
+    let count = 0;
+    try {
+        const promises = req.body.map(async obj => {
+            try {
+                let pool = await poolPromise;
+                const request = pool.request();
+                request.input('user_id', sqlServer.Int, user_id); // You can replace 1 with dynamic user_id if needed
+                request.input('product', sqlServer.VarChar(1000), obj.product);
+                request.input('quantityReserved', sqlServer.Int, obj.qtReserved);
+                
+                const result = await request.execute('addReservation');
+                count++;
+            } catch (err) {
+                console.log(err);
+            }
+        });
+
+        // Wait for all promises to resolve
+        await Promise.all(promises);
+
+        if (req.body.length === count) {
+            res.json({ message: 'good' });
+        } else {
+            res.json({ message: 'error' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: 'Internal Server Error', error: err.message });
+    }
+});
 
 
 

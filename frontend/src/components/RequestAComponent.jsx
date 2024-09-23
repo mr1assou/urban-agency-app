@@ -7,6 +7,7 @@ function RequestAComponent() {
     const [products, setProducts] = useState(null);
     const [choosenProduct, setChoosenProduct] = useState(null);
     const [purchaseOrder, setPurchaseOrder] = useState([]);
+    const [validatePurchaseOrder,setValidatePurchaseOrder]=useState(null);
     useEffect(() => {
         Axios.post(`${import.meta.env.VITE_URL}/displayProducts`, { category: category })
             .then((response) => {
@@ -22,17 +23,16 @@ function RequestAComponent() {
         e.preventDefault();
         setPurchaseOrder(prevPurchaseOrder => {
             let count = 0;
-            let index=0;
+            let index = 0;
             for (const obj of prevPurchaseOrder) {
                 if (obj.product === choosenProduct.product) {
                     console.log(obj, "obj");
-                    prevPurchaseOrder[index].qtReserved=choosenProduct.qtReserved;
+                    prevPurchaseOrder[index].qtReserved = choosenProduct.qtReserved;
                     count++;
                     break;
                 }
                 index++;
             }
-            console.log(prevPurchaseOrder[0], 'prevPurchaseOrder')
             if (count === 0) {
                 const newPurchaseOrder = [...prevPurchaseOrder, { ...choosenProduct, category }];
                 return newPurchaseOrder;
@@ -42,8 +42,24 @@ function RequestAComponent() {
         });
 
     }
-    console.log(choosenProduct, "choosen product");
-    console.log(purchaseOrder, "purchase order");
+    const deleteFromPurchaseOrder = (obj) => {
+        setPurchaseOrder(prevPurchaseOrder =>
+            prevPurchaseOrder.filter(item => item !== obj)
+        );
+    };
+    const sendPurchaseOrder = (e) => {
+        e.preventDefault();
+        Axios.post(`${import.meta.env.VITE_URL}/sendPurchaseOrder`, purchaseOrder)
+            .then((response) => {
+                const message = response.data.message; 
+                setPurchaseOrder([]);
+                setValidatePurchaseOrder('good');
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+
+    }
     return (
         <div className='px-5'>
             <div>
@@ -111,8 +127,13 @@ function RequestAComponent() {
                         <button className="bg-blue px-7 py-3  text-white  rounded-lg text-sm  text-center  hover:scale-105 transition-transform duration-300 font-bold" >ajouter au bon de commande</button>
                     </div>
                 </form>
-                <div className='flex justify-center items-center mt-10'>
-                    <div className='w-full bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)] px-2'>
+                <div className='flex justify-center items-center mt-10 pb-10'>
+                    <div className='w-full bg-white shadow-[0_3px_10px_rgb(0,0,0,0.2)] px-2 pb-5'>
+                        {
+                             validatePurchaseOrder ==="good" ?
+                             <p className="mt-5 text-center p-2 bg-green text-white text-xl font-bold  w-full">le bon de commande a été envoyée avec succès</p>
+                             : null
+                        }
                         <h1 className='font-black text-blue text-2xl text-center mt-5'>
                             Bon de commande</h1>
                         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-10">
@@ -146,15 +167,19 @@ function RequestAComponent() {
                                                 {obj.qtReserved}
                                             </td>
                                             <td className="px-6 py-4">
-                                                <button className="bg-red px-10 py-2  text-white  hover:scale-105 transition-transform duration-300 font-bold" >supprimer</button>
+                                                <button className="bg-red px-10 py-2  text-white  hover:scale-105 transition-transform duration-300 font-bold" onClick={() => { deleteFromPurchaseOrder(obj) }}>supprimer</button>
                                             </td>
                                         </tr>
                                     })
 
                                 }
-
                             </tbody>
                         </table>
+                        <div className='flex justify-center w-full'>
+                            {
+                                purchaseOrder.length > 0 ? <button onClick={sendPurchaseOrder} className="bg-blue px-7 py-3 mt-10  text-white  rounded-lg text-sm  text-center  hover:scale-105 transition-transform duration-300 font-bold" >envoyer bon de commande</button> : null
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
