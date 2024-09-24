@@ -331,4 +331,44 @@ app.post('/rejectRequest', async (req, res) => {
     }
 });
 
+app.get('/displayValidateRequests', async (req, res) => {
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        const result = await request.execute('displayValidateRequests');
+        res.json(result.recordset);
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
+app.post('/validateRequests', async (req, res) => {
+    const {reservationId,product,reservedQuantity}=req.body;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('reservation_id', sqlServer.Int,reservationId);
+        request.input('quantityReserved', sqlServer.Int,reservedQuantity);
+        request.input('product', sqlServer.VarChar(255),product);
+        const result = await request.execute('validateRequest');
+        res.json({message:'good'});
+    }
+    catch (err) {
+        res.json({message:'not good'});
+    }
+});
 
+app.post('/refuseRequests', async (req, res) => {
+    const {reservationId}=req.body;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('reservationId', sqlServer.Int,reservationId);
+        const result = await request.execute('refuseRequest');
+        res.json({message:'good'});
+    }
+    catch (err) {
+        console.log(err);
+        res.json({message:'not good'});
+    }
+});

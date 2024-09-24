@@ -58,7 +58,6 @@ function AddProducts() {
                     setPopUp(false);
                 }
                 else{
-                    console.log('erroooooooooor quantity');
                     setValidateNewQuantity('validate quantity');
                 }
             })

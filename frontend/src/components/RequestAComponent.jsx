@@ -58,7 +58,6 @@ function RequestAComponent() {
             .catch((error) => {
                 console.error('Error:', error);
             });
-
     }
     return (
         <div className='px-5'>

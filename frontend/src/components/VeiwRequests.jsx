@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useEffect } from 'react'
 import Axios from 'axios'
 function VeiwRequests() {
+    Axios.defaults.withCredentials = true;
     const [requests, setRequests] = useState([]);
     const [reload,setReload]=useState(false);
     useEffect(() => {
