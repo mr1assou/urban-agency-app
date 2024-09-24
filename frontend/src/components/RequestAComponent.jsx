@@ -132,7 +132,7 @@ function RequestAComponent() {
                         {
                              validatePurchaseOrder ==="good" ?
                              <p className="mt-5 text-center p-2 bg-green text-white text-xl font-bold  w-full">le bon de commande a été envoyée avec succès</p>
-                             : null
+                             : validatePurchaseOrder ==="error" ? <p className="mt-5 text-center p-2 bg-green text-white text-xl font-bold  w-full">problem de stock</p> : null
                         }
                         <h1 className='font-black text-blue text-2xl text-center mt-5'>
                             Bon de commande</h1>

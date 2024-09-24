@@ -253,7 +253,7 @@ app.post('/modifyQuantity', async (req, res) => {
 
 app.post('/sendPurchaseOrder', async (req, res) => {
     const userCopy = { ...req.session.user };
-    const { user_id} = userCopy;
+    const { user_id } = userCopy;
     let count = 0;
     try {
         const promises = req.body.map(async obj => {
@@ -263,7 +263,7 @@ app.post('/sendPurchaseOrder', async (req, res) => {
                 request.input('user_id', sqlServer.Int, user_id); // You can replace 1 with dynamic user_id if needed
                 request.input('product', sqlServer.VarChar(1000), obj.product);
                 request.input('quantityReserved', sqlServer.Int, obj.qtReserved);
-                
+
                 const result = await request.execute('addReservation');
                 count++;
             } catch (err) {
@@ -286,5 +286,49 @@ app.post('/sendPurchaseOrder', async (req, res) => {
 
 
 
+app.get('/viewRequestOfDepartment', async (req, res) => {
+    const userCopy = { ...req.session.user };
+    const { dep_id } = userCopy;
+    let count = 0;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('dep_id', sqlServer.Int,dep_id);
+        const result = await request.execute('viewRequestOfDepartment');
+        res.json(result.recordset);
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
+
+app.post('/acceptRequest', async (req, res) => {
+    const { user_id} = req.body;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('user_id', sqlServer.Int,user_id);
+        const result = await request.execute('acceptRequest');
+        res.json({ message: "good" });
+    }
+    catch (err) {
+        console.log(err);
+        res.json({ message: "errorjdfdhf" });
+    }
+});
+app.post('/rejectRequest', async (req, res) => {
+    const { user_id} = req.body;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('user_id', sqlServer.Int,user_id);
+        const result = await request.execute('rejectRequest');
+        res.json({ message: "good" });
+    }
+    catch (err) {
+        console.log(err);
+        res.json({ message: "errorjdfdhf" });
+    }
+});
 
 
