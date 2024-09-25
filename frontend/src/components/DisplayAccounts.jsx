@@ -1,9 +1,9 @@
-import React  from 'react'
+import React from 'react'
 import Axios from 'axios'
 import { useState } from 'react'
 import { ImCross } from "react-icons/im";
 import { perms } from '../assets/data';
-function DisplayAccounts({ accounts , func}) {
+function DisplayAccounts({ accounts, func }) {
     Axios.defaults.withCredentials = true;
     const [popUp, setPopUp] = useState(false);
     const [editUser, setEditUser] = useState(null);
@@ -12,6 +12,9 @@ function DisplayAccounts({ accounts , func}) {
     const [displayPermissions, setDisplayPermissions] = useState(false);
     const [validateOperation, setValidateOperation] = useState(null);
     const [blockAccount, setBlockAccount] = useState(false);
+
+    console.log(permissionsArray, 'permissions array');
+    console.log(extensionsArray, 'extensions array');
     const block = (e) => {
         e.preventDefault();
         Axios.post(`${import.meta.env.VITE_URL}/block`, { 'email': editUser.email })
@@ -44,7 +47,7 @@ function DisplayAccounts({ accounts , func}) {
                 }
             })
             if (userObject.role === 'utilisateur' && userObject.dep_name === 'département administratif et financier')
-                setExtensionsArray(['valider les demandes']);
+                setExtensionsArray(['valider les demandes', 'ajouter des articles']);
             else
                 setExtensionsArray([]);
             setEditUser(userObject);
@@ -52,6 +55,7 @@ function DisplayAccounts({ accounts , func}) {
         }))
     }
     const handlePermissions = (e) => {
+        e.preventDefault();
         if (!e.target.checked) {
             setPermissionsArray(prevPermissionsArray => {
                 const array = prevPermissionsArray.filter(item => item != e.target.value);
@@ -62,7 +66,10 @@ function DisplayAccounts({ accounts , func}) {
         }
         else {
             if (extensionsArray)
-                setExtensionsArray([]);
+                setExtensionsArray(prevExtensionArray => {
+                    const newExtensionArray = prevExtensionArray.filter(item => item != e.target.value);
+                    return newExtensionArray;
+                });
             setPermissionsArray(prevPermissionsArray => {
                 const newArray = [...prevPermissionsArray, e.target.value];
                 return newArray;
@@ -79,9 +86,9 @@ function DisplayAccounts({ accounts , func}) {
                     setValidateOperation('Choisissez les permissions')
             })
     }
-    const resetPassword=(e)=>{
+    const resetPassword = (e) => {
         e.preventDefault();
-        Axios.post(`${import.meta.env.VITE_URL}/resetPassword`, { 'email': editUser.email})
+        Axios.post(`${import.meta.env.VITE_URL}/resetPassword`, { 'email': editUser.email })
             .then((response) => {
                 if (response.data.message === "good")
                     setValidateOperation('vous avez réinitialisé votre mot de passe avec succès')
@@ -101,7 +108,7 @@ function DisplayAccounts({ accounts , func}) {
                                 ? <p className="text-center p-3 bg-green text-white text-xl font-bold">les permissions sont mises à jour avec succès</p> :
                                 validateOperation === 'Choisissez les permissions'
                                     ? <p className="text-center p-3 bg-red text-white text-xl font-bold">Choisissez les permissions</p> : validateOperation === 'compte bloqué avec succès'
-                                        ? <p className="text-center p-3 bg-green text-white text-xl font-bold">compte bloqué avec succès</p> : validateOperation==='vous avez réinitialisé votre mot de passe avec succès' ? <p className="text-center p-3 bg-green text-white text-xl font-bold">vous avez réinitialisé votre mot de passe avec succès</p>:null
+                                        ? <p className="text-center p-3 bg-green text-white text-xl font-bold">compte bloqué avec succès</p> : validateOperation === 'vous avez réinitialisé votre mot de passe avec succès' ? <p className="text-center p-3 bg-green text-white text-xl font-bold">vous avez réinitialisé votre mot de passe avec succès</p> : null
                         }
                         <div className='flex justify-between items-center cursor-pointer mt-5'>
                             {
@@ -140,31 +147,36 @@ function DisplayAccounts({ accounts , func}) {
                                         <ul className='absolute  shadow-lg  py-2 px-2 z-10 min-w-full w-full rounded max-h-96 overflow-auto '>
                                             {
                                                 permissionsArray.map((pr) => {
+                                                    console.log(pr,'pr')
                                                     return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
-                                                        <input name="checkbox" value={pr} type="checkbox" checked className="peer w-[10%]" onChange={handlePermissions} />
+                                                        <input  value={pr} type="checkbox" checked className="peer w-[10%]" onChange={handlePermissions} />
                                                         <p className="ml-2  w-[95%]">{pr}</p>
                                                     </div>
                                                     </li>
-                                                })
+                                                })                                                
                                             }
-                                            {
+                                            {/* {
                                                 perms[editUser.role].map((element) => {
-                                                    if (!permissionsArray.includes(element))
+                                                    if (!permissionsArray.includes(element)) {
+                                                        console.log(element, 'el')
                                                         return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
                                                             <input name="checkbox" value={element} type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
                                                             <p className="ml-2  w-[95%]">{element}</p>
                                                         </div>
                                                         </li>
+                                                    }
                                                 })
-                                            }
+                                            } */}
                                             {
                                                 extensionsArray && extensionsArray.map(extension => {
-                                                    if (!permissionsArray.includes(extension))
+                                                    if (!permissionsArray.includes(extension)) {
+                                                        console.log(extension, 'ext')
                                                         return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
-                                                            <input name="checkbox" value={extension} type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
+                                                            <input  value={extension} type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
                                                             <p className="ml-2  w-[95%]">{extension}</p>
                                                         </div>
                                                         </li>
+                                                    }
                                                 })
                                             }
                                         </ul>
@@ -224,7 +236,7 @@ function DisplayAccounts({ accounts , func}) {
                             accounts.map((account) => {
                                 return <tr className="odd:bg-white odd:dark:bg-gray-900 even:bg-gray-50 even:dark:bg-gray-800  dark:border-gray-700 text-center">
                                     <th scope="row" className="px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white font-black">
-                                        {account.firstName.charAt(0).toUpperCase()+account.firstName.slice(1).toLowerCase()} {account.lastName.charAt(0).toUpperCase()+account.lastName.slice(1).toLowerCase()}
+                                        {account.firstName.charAt(0).toUpperCase() + account.firstName.slice(1).toLowerCase()} {account.lastName.charAt(0).toUpperCase() + account.lastName.slice(1).toLowerCase()}
                                     </th>
                                     <td className="px-6 py-4  ">
                                         {account.email}

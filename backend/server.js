@@ -114,15 +114,15 @@ app.post('/addAccount', async (req, res) => {
         res.json({ message: "good" });
     }
     catch (err) {
-        console.log(err);
+        console.log(err.message);
         if (err.message === "permissions empty")
             res.json({ message: "permissions empty" });
         else if (err.message === "Manager obligatory for this department")
             res.json({ message: "manager obligatory" });
-        else if (err.message.startsWith('Violation of UNIQUE KEY constraint'))
-            res.json({ message: "error" });
-        else
+        else if(err.message === "Department manager already exists")
             res.json({ message: 'department manager already exist' });
+        else 
+            res.json({ message: "error" });
     }
 });
 app.post('/resetPassword', async (req, res) => {
