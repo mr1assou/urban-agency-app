@@ -14,7 +14,7 @@ function ManageAccounts() {
   return (
     <div>
         <AddAccounts func={setReload}/>
-        {/* <DisplayAccounts accounts={allAccounts} func={setReload}/> */}
+        <DisplayAccounts accounts={allAccounts} func={setReload}/>
     </div>
   )
 }

@@ -55,7 +55,6 @@ function DisplayAccounts({ accounts, func }) {
         }))
     }
     const handlePermissions = (e) => {
-        e.preventDefault();
         if (!e.target.checked) {
             setPermissionsArray(prevPermissionsArray => {
                 const array = prevPermissionsArray.filter(item => item != e.target.value);
@@ -147,32 +146,22 @@ function DisplayAccounts({ accounts, func }) {
                                         <ul className='absolute  shadow-lg  py-2 px-2 z-10 min-w-full w-full rounded max-h-96 overflow-auto '>
                                             {
                                                 permissionsArray.map((pr) => {
-                                                    console.log(pr,'pr')
                                                     return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
-                                                        <input  value={pr} type="checkbox" checked className="peer w-[10%]" onChange={handlePermissions} />
+                                                        <input  value={pr} type="checkbox"  className="peer w-[10%]" onChange={handlePermissions} 
+                                                        checked={true}
+                                                        />
                                                         <p className="ml-2  w-[95%]">{pr}</p>
                                                     </div>
                                                     </li>
                                                 })                                                
                                             }
-                                            {/* {
-                                                perms[editUser.role].map((element) => {
-                                                    if (!permissionsArray.includes(element)) {
-                                                        console.log(element, 'el')
-                                                        return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
-                                                            <input name="checkbox" value={element} type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
-                                                            <p className="ml-2  w-[95%]">{element}</p>
-                                                        </div>
-                                                        </li>
-                                                    }
-                                                })
-                                            } */}
                                             {
                                                 extensionsArray && extensionsArray.map(extension => {
                                                     if (!permissionsArray.includes(extension)) {
-                                                        console.log(extension, 'ext')
                                                         return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
-                                                            <input  value={extension} type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
+                                                            <input  value={extension} 
+                                                            checked={false} 
+                                                            type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
                                                             <p className="ml-2  w-[95%]">{extension}</p>
                                                         </div>
                                                         </li>
