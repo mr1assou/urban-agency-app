@@ -14,7 +14,8 @@ export default {
       'green':'#00A41D',
       'yellow':'#BCC224',
       'orange':'#FF9000',
-      'black':'#000000'
+      'black':'#000000',
+      'purple':'#845ec2'
     },
   },
   plugins: [],

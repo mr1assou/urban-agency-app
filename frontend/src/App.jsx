@@ -9,7 +9,8 @@ import AddProducts from './components/AddProducts.jsx'
 import RequestAComponent from './components/RequestAComponent.jsx';
 import VeiwRequests from './components/VeiwRequests.jsx';
 import ValidRequests from './components/ValidRequests.jsx';
-
+import StateOfMyRequests from './components/StateOfMyRequests.jsx';
+import Settings from './components/Settings.jsx';
 function App() {
   return (
     <Router>
@@ -22,6 +23,8 @@ function App() {
           <Route path="requestComponent" element={<RequestAComponent />} />
           <Route path="veiwRequests" element={<VeiwRequests />} />
           <Route path="ValidRequests" element={<ValidRequests />} />
+          <Route path="stateOfMyRequests" element={<StateOfMyRequests />} />
+          <Route path="Settings" element={<Settings />} />
         </Route>
       </Routes>
     </Router>

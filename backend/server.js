@@ -372,3 +372,47 @@ app.post('/refuseRequests', async (req, res) => {
         res.json({message:'not good'});
     }
 });
+app.get('/stateOfMyRequests', async (req, res) => {
+    const userCopy = { ...req.session.user };
+    const { user_id } = userCopy;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('user_id', sqlServer.Int,user_id);
+        const result = await request.execute('StateOfMyRequests');
+        res.json(result.recordset);
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
+
+app.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).send('Error in destroying session');
+        }
+        res.clearCookie('connect.sid'); // Optional: Clear session cookie from the browser
+        res.send({message:"good"});
+    });
+});
+
+
+app.post('/changePassword', async (req, res) => {
+    const userCopy = { ...req.session.user };
+    const { user_id } = userCopy;
+    const {password}=req.body;
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('user_id', sqlServer.Int,user_id);
+        request.input('hashedPassword', sqlServer.VarChar(255), hashedPassword);
+        const result = await request.execute('changePassword');
+        res.json({ message: "good" });
+    }
+    catch (err) {
+        res.json({ message: "error" });
+    }
+});
