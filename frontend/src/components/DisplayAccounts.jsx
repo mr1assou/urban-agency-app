@@ -12,9 +12,6 @@ function DisplayAccounts({ accounts, func }) {
     const [displayPermissions, setDisplayPermissions] = useState(false);
     const [validateOperation, setValidateOperation] = useState(null);
     const [blockAccount, setBlockAccount] = useState(false);
-
-    console.log(permissionsArray, 'permissions array');
-    console.log(extensionsArray, 'extensions array');
     const block = (e) => {
         e.preventDefault();
         Axios.post(`${import.meta.env.VITE_URL}/block`, { 'email': editUser.email })
@@ -47,7 +44,10 @@ function DisplayAccounts({ accounts, func }) {
                 }
             })
             if (userObject.role === 'utilisateur' && userObject.dep_name === 'département administratif et financier')
-                setExtensionsArray(['valider les demandes', 'ajouter des articles']);
+                setExtensionsArray(['valider les demandes', 'ajouter des articles', 'rapport département', 'regarder les demandes']);
+            else if(userObject.role === 'utilisateur'){
+                setExtensionsArray(['rapport département','regarder les demandes de département']);
+            }
             else
                 setExtensionsArray([]);
             setEditUser(userObject);
@@ -60,8 +60,12 @@ function DisplayAccounts({ accounts, func }) {
                 const array = prevPermissionsArray.filter(item => item != e.target.value);
                 return array;
             });
-            if (editUser.role === 'utilisateur' && editUser.dep_name === 'département administratif et financier')
-                setExtensionsArray(['valider les demandes']);
+            setExtensionsArray(prevExtensionsArray => {
+                if (prevExtensionsArray.includes(e.target.value))
+                    prevExtensionsArray = prevExtensionsArray.filter(item => item != e.target.value);
+                const newArray = [...prevExtensionsArray, e.target.value];
+                return newArray;
+            });
         }
         else {
             if (extensionsArray)
@@ -77,13 +81,35 @@ function DisplayAccounts({ accounts, func }) {
     }
     const updatePermissions = (e) => {
         e.preventDefault();
-        Axios.post(`${import.meta.env.VITE_URL}/updatePermissions`, { 'email': editUser.email, permissions: permissionsArray })
-            .then((response) => {
-                if (response.data.message === "good")
-                    setValidateOperation('les autorisations sont mises à jour avec succès')
-                else
-                    setValidateOperation('Choisissez les permissions')
-            })
+        let backupArray = [...permissionsArray];
+        if (backupArray.includes('demander un composant'))
+            backupArray = backupArray.filter(item => item !== 'demander un composant');
+        if (backupArray.includes('état de mes demandes'))
+            backupArray = backupArray.filter(item => item !== 'état de mes demandes');
+        let count1 = 0;
+        let count2=0;
+        const chefDepartment = [...perms['chef département']];
+        const responsableStock = [...perms['responsable de stock']];
+        for (let item of backupArray) {
+            if (responsableStock.includes(item)) {
+                count1++;
+            }
+            if( chefDepartment.includes(item)){
+                count2++;
+            }
+        }
+        if (count1!==0 && count2!==0) {
+            setValidateOperation(`impossible d'avoir les autorisations du  responsable de stock et chef département`);
+        }
+        else {
+            Axios.post(`${import.meta.env.VITE_URL}/updatePermissions`, { 'email': editUser.email, permissions: permissionsArray })
+                .then((response) => {
+                    if (response.data.message === "good")
+                        setValidateOperation('les autorisations sont mises à jour avec succès')
+                    else
+                        setValidateOperation('Choisissez les permissions')
+                })
+        }
     }
     const resetPassword = (e) => {
         e.preventDefault();
@@ -107,7 +133,7 @@ function DisplayAccounts({ accounts, func }) {
                                 ? <p className="text-center p-3 bg-green text-white text-xl font-bold">les permissions sont mises à jour avec succès</p> :
                                 validateOperation === 'Choisissez les permissions'
                                     ? <p className="text-center p-3 bg-red text-white text-xl font-bold">Choisissez les permissions</p> : validateOperation === 'compte bloqué avec succès'
-                                        ? <p className="text-center p-3 bg-green text-white text-xl font-bold">compte bloqué avec succès</p> : validateOperation === 'vous avez réinitialisé votre mot de passe avec succès' ? <p className="text-center p-3 bg-green text-white text-xl font-bold">vous avez réinitialisé votre mot de passe avec succès</p> : null
+                                        ? <p className="text-center p-3 bg-green text-white text-xl font-bold">compte bloqué avec succès</p> : validateOperation === 'vous avez réinitialisé votre mot de passe avec succès' ? <p className="text-center p-3 bg-green text-white text-xl font-bold">vous avez réinitialisé votre mot de passe avec succès</p> : validateOperation === `impossible d'avoir les autorisations du  responsable de stock et chef département` ? <p className="text-center p-3 bg-red text-white text-xl font-bold">impossible d'avoir les autorisations du  responsable de stock et chef département</p> : null
                         }
                         <div className='flex justify-between items-center cursor-pointer mt-5'>
                             {
@@ -147,21 +173,32 @@ function DisplayAccounts({ accounts, func }) {
                                             {
                                                 permissionsArray.map((pr) => {
                                                     return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
-                                                        <input  value={pr} type="checkbox"  className="peer w-[10%]" onChange={handlePermissions} 
-                                                        checked={true}
+                                                        <input value={pr} type="checkbox" className="peer w-[10%]" onChange={handlePermissions}
+                                                            checked={true}
                                                         />
                                                         <p className="ml-2  w-[95%]">{pr}</p>
                                                     </div>
                                                     </li>
-                                                })                                                
+                                                })
+                                            }
+                                            {
+                                                perms[editUser.role].map((pr) => {
+                                                    if (!permissionsArray.includes(pr) && !extensionsArray.includes(pr))
+                                                        return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
+                                                            <input value={pr} type="checkbox" className="peer w-[10%]" onChange={handlePermissions}
+                                                            />
+                                                            <p className="ml-2  w-[95%]">{pr}</p>
+                                                        </div>
+                                                        </li>
+                                                })
                                             }
                                             {
                                                 extensionsArray && extensionsArray.map(extension => {
                                                     if (!permissionsArray.includes(extension)) {
                                                         return <li className='py-2.5 px-4 hover:bg-blue-50 rounded text-black text-sm cursor-pointer text-[12px]'><div className="flex items-center">
-                                                            <input  value={extension} 
-                                                            checked={false} 
-                                                            type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
+                                                            <input value={extension}
+                                                                checked={false}
+                                                                type="checkbox" className="peer w-[10%]" onChange={handlePermissions} />
                                                             <p className="ml-2  w-[95%]">{extension}</p>
                                                         </div>
                                                         </li>

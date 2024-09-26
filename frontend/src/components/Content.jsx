@@ -44,7 +44,7 @@ function Content() {
                         if (permission.title === "regarder les demandes")
                             return <Link to='/profile/VeiwRequests' className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <LuMessageCircle className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
-                                <p className=" text-center text-white font-bold ">regarder les demandes</p>
+                                <p className=" text-center text-white font-bold ">regarder les demandes de département</p>
                             </Link>
                         if (permission.title === "ajouter des articles")
                             return <Link to="/profile/addProducts" className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">

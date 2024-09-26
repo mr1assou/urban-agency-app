@@ -73,7 +73,6 @@ function AddAccounts({ func }) {
         e.preventDefault();
         setDisplayPermissions(!displayPermissions);
     }
-    console.log(newAccount);
     return (
         <div className='p-3'>
             {

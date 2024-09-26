@@ -22,7 +22,7 @@ function Settings() {
   return (
     <div className='flex flex-col items-center justify-center mt-10'>
       <h1 className='font-black text-blue text-2xl  text-center'>
-        Changer le mot de passe</h1>
+      Paramètres de changer le mot de passe</h1>
         {
                      stateChange ==="good" ?
                      <p className="text-center p-2 bg-green text-white text-xl font-bold  w-full mt-10">vous avez changer le mot de passe avec succès</p>
