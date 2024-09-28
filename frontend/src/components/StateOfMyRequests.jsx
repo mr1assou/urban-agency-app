@@ -53,7 +53,15 @@ function StateOfMyRequests() {
                       {obj.quantity_reserved}
                     </td>
                     <td className="px-6 py-4  ">
-                      {new Date(obj.reservation_date).toLocaleDateString('en-GB')}
+                      {new Date(obj.reservation_date).toLocaleString('en-GB', {
+                        timeZone: 'UTC',
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit'
+                      })}
                     </td>
                     <td className="px-6 py-4 gap-2 ">
                       {obj.status}

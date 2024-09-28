@@ -52,10 +52,10 @@ function Content() {
                                 <p className=" text-center text-white font-bold ">ajouter des articles</p>
                             </Link>
                         if (permission.title === "rapport département")
-                            return <div className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
+                            return <Link to='/profile/DepartmentRepport' className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <TbReportAnalytics className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                                 <p className=" text-center text-white font-bold ">rapport de département</p>
-                            </div>
+                            </Link>
                         if (permission.title === "valider les demandes")
                             return <Link to='/profile/ValidRequests' className="bg-grey w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <GrValidate className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
