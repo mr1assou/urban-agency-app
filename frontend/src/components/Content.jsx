@@ -41,7 +41,7 @@ function Content() {
                                 <FaHandHoldingMedical className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                                 <p className=" text-center text-white font-bold ">demander un composant</p>
                             </Link>
-                        if (permission.title === "regarder les demandes")
+                        if (permission.title === "regarder les demandes de département")
                             return <Link to='/profile/VeiwRequests' className="bg-blue w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <LuMessageCircle className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                                 <p className=" text-center text-white font-bold ">regarder les demandes de département</p>
