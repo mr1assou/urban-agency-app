@@ -12,6 +12,7 @@ import ValidRequests from './components/ValidRequests.jsx';
 import StateOfMyRequests from './components/StateOfMyRequests.jsx';
 import Settings from './components/Settings.jsx';
 import DepartmentRepport from './components/DepartmentRepport.jsx';
+import AddNewStock from './components/addNewStock.jsx';
 function App() {
   return (
     <Router>
@@ -27,6 +28,7 @@ function App() {
           <Route path="stateOfMyRequests" element={<StateOfMyRequests />} />
           <Route path="Settings" element={<Settings />} />
           <Route path="DepartmentRepport" element={<DepartmentRepport />} />
+          <Route path="AddNewStock" element={<AddNewStock />} />
         </Route>
       </Routes>
     </Router>

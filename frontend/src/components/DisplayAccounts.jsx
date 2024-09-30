@@ -44,7 +44,7 @@ function DisplayAccounts({ accounts, func }) {
                 }
             })
             if (userObject.role === 'utilisateur' && userObject.dep_name === 'département administratif et financier')
-                setExtensionsArray(['valider les demandes', 'ajouter des articles', 'rapport département', 'regarder les demandes']);
+                setExtensionsArray(['valider les demandes', 'ajouter des articles', 'rapport département', 'regarder les demandes','ajouter un nouveau stock']);
             else if(userObject.role === 'utilisateur'){
                 setExtensionsArray(['rapport département','regarder les demandes de département']);
             }

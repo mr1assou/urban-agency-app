@@ -13,6 +13,7 @@ import { GrValidate } from "react-icons/gr";
 import { FcNeutralTrading } from "react-icons/fc";
 import { CiSettings } from "react-icons/ci";
 import { FaChartBar } from "react-icons/fa";
+import { CiBoxes } from "react-icons/ci";
 function Content() {
     Axios.defaults.withCredentials = true;
     const [permissions, setPermissions] = useState([]);
@@ -65,6 +66,11 @@ function Content() {
                             return <Link to='/profile/stateOfMyRequests' className="bg-black w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
                                 <FaChartBar className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                                 <p className=" text-center text-white font-bold ">état de mes demandes</p>
+                            </Link>
+                        if (permission.title === "ajouter un nouveau stock")
+                            return <Link to='/profile/AddNewStock' className="bg-purple w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
+                                <CiBoxes  className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
+                                <p className=" text-center text-white font-bold ">ajouter un nouveau stock</p>
                             </Link>
 
                     })

@@ -119,9 +119,9 @@ app.post('/addAccount', async (req, res) => {
             res.json({ message: "permissions empty" });
         else if (err.message === "Manager obligatory for this department")
             res.json({ message: "manager obligatory" });
-        else if(err.message === "Department manager already exists")
+        else if (err.message === "Department manager already exists")
             res.json({ message: 'department manager already exist' });
-        else 
+        else
             res.json({ message: "error" });
     }
 });
@@ -293,7 +293,7 @@ app.get('/viewRequestOfDepartment', async (req, res) => {
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('dep_id', sqlServer.Int,dep_id);
+        request.input('dep_id', sqlServer.Int, dep_id);
         const result = await request.execute('viewRequestOfDepartment');
         res.json(result.recordset);
     }
@@ -303,13 +303,13 @@ app.get('/viewRequestOfDepartment', async (req, res) => {
 });
 
 app.post('/acceptRequest', async (req, res) => {
-    const { user_id,quantity_reserved,product} = req.body;
+    const { user_id, quantity_reserved, product } = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('user_id', sqlServer.Int,user_id);
-        request.input('quantity_reserved', sqlServer.Int,quantity_reserved);
-        request.input('product', sqlServer.VarChar(255),product);
+        request.input('user_id', sqlServer.Int, user_id);
+        request.input('quantity_reserved', sqlServer.Int, quantity_reserved);
+        request.input('product', sqlServer.VarChar(255), product);
         const result = await request.execute('acceptRequest');
         res.json({ message: "good" });
     }
@@ -319,11 +319,11 @@ app.post('/acceptRequest', async (req, res) => {
     }
 });
 app.post('/rejectRequest', async (req, res) => {
-    const { user_id} = req.body;
+    const { user_id } = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('user_id', sqlServer.Int,user_id);
+        request.input('user_id', sqlServer.Int, user_id);
         const result = await request.execute('rejectRequest');
         res.json({ message: "good" });
     }
@@ -345,33 +345,33 @@ app.get('/displayValidateRequests', async (req, res) => {
     }
 });
 app.post('/validateRequests', async (req, res) => {
-    const {reservationId,product,reservedQuantity}=req.body;
+    const { reservationId, product, reservedQuantity } = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('reservation_id', sqlServer.Int,reservationId);
-        request.input('quantityReserved', sqlServer.Int,reservedQuantity);
-        request.input('product', sqlServer.VarChar(255),product);
+        request.input('reservation_id', sqlServer.Int, reservationId);
+        request.input('quantityReserved', sqlServer.Int, reservedQuantity);
+        request.input('product', sqlServer.VarChar(255), product);
         const result = await request.execute('validateRequest');
-        res.json({message:'good'});
+        res.json({ message: 'good' });
     }
     catch (err) {
-        res.json({message:'not good'});
+        res.json({ message: 'not good' });
     }
 });
 
 app.post('/refuseRequests', async (req, res) => {
-    const {reservationId}=req.body;
+    const { reservationId } = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('reservationId', sqlServer.Int,reservationId);
+        request.input('reservationId', sqlServer.Int, reservationId);
         const result = await request.execute('refuseRequest');
-        res.json({message:'good'});
+        res.json({ message: 'good' });
     }
     catch (err) {
         console.log(err);
-        res.json({message:'not good'});
+        res.json({ message: 'not good' });
     }
 });
 app.get('/stateOfMyRequests', async (req, res) => {
@@ -380,7 +380,7 @@ app.get('/stateOfMyRequests', async (req, res) => {
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('user_id', sqlServer.Int,user_id);
+        request.input('user_id', sqlServer.Int, user_id);
         const result = await request.execute('StateOfMyRequests');
         res.json(result.recordset);
     }
@@ -395,7 +395,7 @@ app.post('/logout', (req, res) => {
             return res.status(500).send('Error in destroying session');
         }
         res.clearCookie('connect.sid'); // Optional: Clear session cookie from the browser
-        res.send({message:"good"});
+        res.send({ message: "good" });
     });
 });
 
@@ -403,13 +403,13 @@ app.post('/logout', (req, res) => {
 app.post('/changePassword', async (req, res) => {
     const userCopy = { ...req.session.user };
     const { user_id } = userCopy;
-    const {password}=req.body;
+    const { password } = req.body;
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('user_id', sqlServer.Int,user_id);
+        request.input('user_id', sqlServer.Int, user_id);
         request.input('hashedPassword', sqlServer.VarChar(255), hashedPassword);
         const result = await request.execute('changePassword');
         res.json({ message: "good" });
@@ -426,7 +426,7 @@ app.get('/catchReservationDates', async (req, res) => {
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('dep_id', sqlServer.Int,dep_id);
+        request.input('dep_id', sqlServer.Int, dep_id);
         const result = await request.execute('catchReservationDates');
         res.json(result.recordset);
     }
@@ -435,18 +435,65 @@ app.get('/catchReservationDates', async (req, res) => {
     }
 });
 app.get('/departmentReport', async (req, res) => {
-    const {year}=req.body;
+    const { year } = req.body;
     const userCopy = { ...req.session.user };
     const { dep_id } = userCopy;
     try {
         let pool = await poolPromise;
         const request = pool.request();
-        request.input('dep_id', sqlServer.Int,dep_id);
-        request.input('year', sqlServer.Int,year);
+        request.input('dep_id', sqlServer.Int, dep_id);
+        request.input('year', sqlServer.Int, year);
         const result = await request.execute('departmentReport');
         res.json(result.recordset);
     }
     catch (err) {
         console.log(err);
+    }
+});
+
+app.post('/purchaseOrderForStock', async (req, res) => {
+    const { purchaseOrder, supplier } = req.body;
+    const { company_name, adress, city, phone_number, fax } =supplier;
+    let purchaseOrderId=0;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('business_name', sqlServer.VarChar(255),company_name);
+        request.input('adress', sqlServer.VarChar(255),adress);
+        request.input('city', sqlServer.VarChar(255),city);
+        request.input('phone_number', sqlServer.VarChar(255),phone_number);
+        request.input('fax', sqlServer.VarChar(255),fax);
+        const result = await request.execute('addSupplier');
+        console.log(result.recordset);
+        purchaseOrderId=result.recordset[0].purchaseOrder_id;
+    } catch (err) {
+        console.log(err);
+    }
+    let count = 0;
+    try {
+        const promises = purchaseOrder.map(async obj => {
+            try {
+                let pool = await poolPromise;
+                const request = pool.request();
+                request.input('product', sqlServer.VarChar(255),obj.product);
+                request.input('purchaseOrderId', sqlServer.Int,purchaseOrderId);
+                request.input('newQuantity', sqlServer.Int,obj.qtReserved);
+                const result = await request.execute('addPurchaseOrderReport');
+                count++;
+            } catch (err) {
+                console.log(err);
+            }
+        });
+
+        // Wait for all promises to resolve
+        await Promise.all(promises);
+
+        if (req.body.length === count) {
+            res.json({ message: 'good' });
+        } else {
+            res.json({ message: 'error' });
+        }
+    } catch (err) {
+        res.status(500).json({ message: 'Internal Server Error', error: err.message });
     }
 });

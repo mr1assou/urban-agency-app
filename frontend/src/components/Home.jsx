@@ -3,6 +3,7 @@ import background from '../assets/images/background.jpg'
 import logo from '../assets/images/logo.png'
 import { useNavigate } from 'react-router-dom';
 import { useState,useEffect} from 'react';
+
 import Axios from 'axios'
 const Home = () => {
   Axios.defaults.withCredentials=true;
