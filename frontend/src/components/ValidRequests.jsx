@@ -21,7 +21,6 @@ function validRequests() {
                 setStateValidation('validate');
             }
             else{
-                console.log("error");
                 setStateValidation('problem quantity');
             }
         })

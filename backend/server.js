@@ -303,17 +303,19 @@ app.get('/viewRequestOfDepartment', async (req, res) => {
 });
 
 app.post('/acceptRequest', async (req, res) => {
-    const { user_id} = req.body;
+    const { user_id,quantity_reserved,product} = req.body;
     try {
         let pool = await poolPromise;
         const request = pool.request();
         request.input('user_id', sqlServer.Int,user_id);
+        request.input('quantity_reserved', sqlServer.Int,quantity_reserved);
+        request.input('product', sqlServer.VarChar(255),product);
         const result = await request.execute('acceptRequest');
         res.json({ message: "good" });
     }
     catch (err) {
-        console.log(err);
-        res.json({ message: "errorjdfdhf" });
+        console.log(err.message);
+        res.json({ message: "error" });
     }
 });
 app.post('/rejectRequest', async (req, res) => {
@@ -327,7 +329,7 @@ app.post('/rejectRequest', async (req, res) => {
     }
     catch (err) {
         console.log(err);
-        res.json({ message: "errorjdfdhf" });
+        res.json({ message: "error" });
     }
 });
 
@@ -414,5 +416,37 @@ app.post('/changePassword', async (req, res) => {
     }
     catch (err) {
         res.json({ message: "error" });
+    }
+});
+
+
+app.get('/catchReservationDates', async (req, res) => {
+    const userCopy = { ...req.session.user };
+    const { dep_id } = userCopy;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('dep_id', sqlServer.Int,dep_id);
+        const result = await request.execute('catchReservationDates');
+        res.json(result.recordset);
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
+app.get('/departmentReport', async (req, res) => {
+    const {year}=req.body;
+    const userCopy = { ...req.session.user };
+    const { dep_id } = userCopy;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('dep_id', sqlServer.Int,dep_id);
+        request.input('year', sqlServer.Int,year);
+        const result = await request.execute('departmentReport');
+        res.json(result.recordset);
+    }
+    catch (err) {
+        console.log(err);
     }
 });
