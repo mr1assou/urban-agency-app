@@ -95,7 +95,7 @@ function ReportForStock() {
             <h1 className='font-black text-blue text-2xl mt-5 text-center'>
                 générer un rapport de stock</h1>
             <button className="bg-blue w-[30%] text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 hover:scale-105 transition-transform duration-300 mt-10" onClick={downloadPdf}>générer un pdf</button>
-            <div ref={pdfRef} className='w-full  mt-10 '>
+            <div ref={pdfRef} className='w-full  mt-10 px-10'>
                 <div className='flex justify-between items-center px-10'>
                     <img src={logo} className="block w-[20%] h-[90%] " />
                     <p className='  text-lg mt-5 text-center'>

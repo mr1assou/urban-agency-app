@@ -109,7 +109,7 @@ app.post('/addAccount', async (req, res) => {
         request.input('department', sqlServer.VarChar(255), department);
         request.input('password', sqlServer.VarChar(255), hashedPassword);
         request.input('role', sqlServer.VarChar(255), role);
-        request.input('permissions', sqlServer.VarChar(255), permissions.join("-"));
+        request.input('permissions', sqlServer.VarChar(900), permissions.join("-"));
         const result = await request.execute('addAccount');
         res.json({ message: "good" });
     }
