@@ -14,6 +14,7 @@ import { FcNeutralTrading } from "react-icons/fc";
 import { CiSettings } from "react-icons/ci";
 import { FaChartBar } from "react-icons/fa";
 import { CiBoxes } from "react-icons/ci";
+import { BiSolidReport } from "react-icons/bi";
 function Content() {
     Axios.defaults.withCredentials = true;
     const [permissions, setPermissions] = useState([]);
@@ -72,6 +73,11 @@ function Content() {
                                 <CiBoxes  className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                                 <p className=" text-center text-white font-bold ">ajouter un nouveau stock</p>
                             </Link>
+                        if (permission.title === "génerer le rapport pour le stock")
+                            return <Link to='/profile/GenerateReportForStock' className="bg-red w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
+                                <BiSolidReport  className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
+                                <p className=" text-center text-white font-bold ">génerer le rapport pour le stock</p>
+                            </Link>
 
                     })
                 }
@@ -79,10 +85,6 @@ function Content() {
                     <CiSettings className="text-center w-full text-[9rem] text-white hover:cursor-pointer rounded-lg" />
                     <p className=" text-center text-white font-bold ">les paramètres</p>
                 </Link>
-                {/* <Link className="bg-red w-[25%] h-[55%] rounded-lg  hover:scale-105 transition-transform duration-300 flex flex-col justify-evenly items-center">
-                    <CiLogout />
-                    <p className=" text-center text-white font-bold ">se déconnecter</p>
-                </Link> */}
             </div>
         </div>
     )

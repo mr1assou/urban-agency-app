@@ -435,7 +435,7 @@ app.get('/catchReservationDates', async (req, res) => {
     }
 });
 app.get('/departmentReport', async (req, res) => {
-    const { year } = req.body;
+    const { year } = req.query;
     const userCopy = { ...req.session.user };
     const { dep_id } = userCopy;
     try {
@@ -495,5 +495,46 @@ app.post('/purchaseOrderForStock', async (req, res) => {
         }
     } catch (err) {
         res.status(500).json({ message: 'Internal Server Error', error: err.message });
+    }
+});
+
+
+app.get('/reportForStock', async (req, res) => {
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        const result = await request.execute('reportForStock');
+        res.json(result.recordset);
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
+
+
+app.get('/catchPurchaseOrderDates', async (req, res) => {
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        const result = await request.execute('catchPurchaseOrderDates');
+        res.json(result.recordset);
+    }
+    catch (err) {
+        console.log(err);
+    }
+});
+
+app.get('/generatePurchaseOrderReport', async (req, res) => {
+    const { year } = req.query;
+    try {
+        let pool = await poolPromise;
+        const request = pool.request();
+        request.input('year', sqlServer.Int, year);
+        const result = await request.execute('generatePurchaseOrderReport');
+        console.log(result.recordset);
+        res.json(result.recordset);
+    }
+    catch (err) {
+        console.log(err);
     }
 });

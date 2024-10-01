@@ -13,6 +13,9 @@ import StateOfMyRequests from './components/StateOfMyRequests.jsx';
 import Settings from './components/Settings.jsx';
 import DepartmentRepport from './components/DepartmentRepport.jsx';
 import AddNewStock from './components/addNewStock.jsx';
+import GenerateReportForStock from './components/GenerateReportForStock.jsx';
+import ReportForPurchaseOrder from './components/ReportForPurchaseOrder.jsx';
+import ReportForStock from './components/ReportForStock.jsx';
 function App() {
   return (
     <Router>
@@ -29,9 +32,12 @@ function App() {
           <Route path="Settings" element={<Settings />} />
           <Route path="DepartmentRepport" element={<DepartmentRepport />} />
           <Route path="AddNewStock" element={<AddNewStock />} />
+          <Route path="GenerateReportForStock" element={<GenerateReportForStock />} />
+          <Route path="ReportForStock" element={<ReportForStock />} />
+          <Route path="ReportForPurchaseOrder" element={<ReportForPurchaseOrder />} />
         </Route>
       </Routes>
-    </Router>
+    </Router >
 
   );
 }

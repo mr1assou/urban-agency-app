@@ -12,31 +12,74 @@ function Pdf() {
   const pdfRef = useRef();
   useEffect(() => {
     Axios.get(`${import.meta.env.VITE_URL}/catchReservationDates`).then((response) => {
-      console.log(response.data);
       setDates(response.data);
       setYear(response.data[0].year);
     })
   }, [])
   useEffect(() => {
-    Axios.get(`${import.meta.env.VITE_URL}/departmentReport`, { year }).then((response) => {
+    Axios.get(`${import.meta.env.VITE_URL}/departmentReport`, {
+      params: { year }
+  }).then((response) => {
       setReport(response.data);
     })
   }, [year])
   const downloadPdf = () => {
-    const input = pdfRef.current;
+    const input = pdfRef.current; // Assuming you have a reference to the content you want to print
     html2canvas(input).then((canvas) => {
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('p', 'mm', 'a4', true);
+
+      // PDF dimensions in millimeters
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
+
+      // Canvas dimensions in pixels
       const imgWidth = canvas.width;
       const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 30;
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save('invoice.pdf');
-    })
+
+      // Scale the image to fit the PDF width
+      const scale = pdfWidth / imgWidth;
+      const scaledHeight = imgHeight * scale;
+
+      let currentHeight = 0;
+      const pageBreakThreshold = pdfHeight * 0.98; // Set the threshold to 80% of the page height
+      const topPadding = 10; // Define your top padding (in mm)
+
+      // Loop to handle page overflow by splitting the image into chunks that fit each page
+      while (currentHeight < scaledHeight) {
+        if (currentHeight > 0) {
+          pdf.addPage(); // Add a new page if we're on the second or subsequent pages
+        }
+
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = imgWidth;
+        pageCanvas.height = pdfHeight * 0.98 / scale; // Height for a single page, only 80% of the PDF height
+        const pageCtx = pageCanvas.getContext('2d');
+        pageCtx.drawImage(
+          canvas,
+          0, currentHeight / scale, // Source X, Y (start drawing from this height)
+          imgWidth, pageCanvas.height, // Source Width, Height
+          0, 0, // Destination X, Y on the page
+          imgWidth, pageCanvas.height // Destination Width, Height on the page
+        );
+
+        const pageImgData = pageCanvas.toDataURL('image/png');
+        pdf.addImage(
+          pageImgData,
+          'PNG',
+          0,
+          topPadding, // Set the Y position to the top padding
+          pdfWidth,
+          pdfHeight * 0.98 - topPadding // Adjust height to account for the top padding
+        );
+
+        // Update the current height based on the 80% height used, adjusting for padding
+        currentHeight += pageBreakThreshold;
+      }
+
+      // Save the PDF
+      pdf.save('products.pdf');
+    });
   }
   const handleDate = (e) => {
     setYear(e.target.value);
@@ -59,7 +102,7 @@ function Pdf() {
         <div className='flex justify-between items-center px-10'>
           <img src={logo} className="block w-[20%] h-[90%] " />
           <p className='  text-lg mt-5 text-center'>
-          rapport sur la consommation des stocks: <span className='ml-1'>{year}</span></p>
+            rapport sur la consommation des stocks: <span className='ml-1'>{year}</span></p>
         </div>
         <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400 mt-10 ">
           <thead className="text-gray-700 capitalize bg-gray-50 dark:bg-gray-700 dark:text-gray-400 ">
