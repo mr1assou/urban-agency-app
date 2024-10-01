@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 app.use(cors({
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173","http://192.168.100.137:5173"],
     methods: ["GET", "POST"],
     credentials: true
 }));
