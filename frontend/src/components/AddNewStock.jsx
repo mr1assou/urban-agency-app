@@ -9,7 +9,7 @@ function AddNewStock() {
   const [purchaseOrder, setPurchaseOrder] = useState([]);
   const [validatePurchaseOrder, setValidatePurchaseOrder] = useState(null);
   const [supplier, setSupplier] = useState({ company_name: '', adress: '', city: '', phone_number: '', fax: '' });
-
+  const [reload,setReload]=useState(false);
   useEffect(() => {
     Axios.post(`${import.meta.env.VITE_URL}/displayProducts`, { category: category })
       .then((response) => {
@@ -17,7 +17,7 @@ function AddNewStock() {
         setProducts(data);
         setChoosenProduct({ product: data[0].title_product, qtStock: data[0].quantity, qtReserved: '' });
       })
-  }, [category]);
+  }, [category,reload]);
   const handleSupplier = (e) => {
     setSupplier({ ...supplier, [e.target.name]: e.target.value });
   }
@@ -69,6 +69,7 @@ function AddNewStock() {
       .then((response) => {
         setPurchaseOrder([]);
         setSupplier({ company_name: '', adress: '', city: '', phone_number: '', fax: '' });
+        setReload(!reload);
         setValidatePurchaseOrder('good');
       })
       .catch((error) => {

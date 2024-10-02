@@ -30,7 +30,7 @@ function ReportForPurchaseOrder() {
         }
         else {
           let time = playData[playData.length - 1].datePurchaseOrder;
-          if (time === obj.datePurchaseOrder) {
+          if (time.slice(0,-7) === obj.datePurchaseOrder.slice(0,-7)) {
             playData[playData.length - 1][`title_product${count}`] = obj.title_product;
             playData[playData.length - 1][`title_category${count}`] = obj.title_category;
             playData[playData.length - 1][`datePurchaseOrder${count}`] = new Date(obj.datePurchaseOrder).toLocaleString('en-GB', {
@@ -136,7 +136,6 @@ function ReportForPurchaseOrder() {
           <p className='  text-lg mt-5 text-center'>
             rapport sur les bons de commande: <span className='ml-1'>{year}</span></p>
         </div>
-        {/* from this */}
         {
           report.map(rep => {
             let iterations = ((Object.keys(rep).length - 9) / 4) + 1
@@ -239,7 +238,6 @@ function ReportForPurchaseOrder() {
             </div>
           })
         }
-        {/* to this */}
         <div>
         </div>
       </div>
